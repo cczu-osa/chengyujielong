@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>成语助手</title>
+</head>
+<body>
+    <form action="/search" method="get">
+        输入成语首拼<input type="text" name="key" />
+        <button type="submit">提交</button>
+    </form>
+    {% if chengyu %}
+    <h4>搜索结果（共找到{{ chengyu.count }}个结果）</h4>
+    <table border="1" cellpadding="10" >
+    <tr>
+        <td>编号</td>
+        <td>名称</td>
+        <td>拼音</td>
+        <td>添加时间</td>
+    </tr>
+    {% for cy in chengyu.data %}
+        <tr>
+            <td>{{ cy.id }}</td>
+            <td>{{ cy.name }}</td>
+            <td>{{ cy.py }}</td>
+            <td>{{ cy.add_time }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    {% endif %}
+</body>
+
+<style>
+    tr{
+        padding: 5px;
+    }
+    td{
+        padding: 5px;
+    }
+</style>
+</html>
