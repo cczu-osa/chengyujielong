@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>成语助手</title>
+    <script src="https://cdn.bootcss.com/clipboard.js/2.0.1/clipboard.js"></script>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 </head>
 <body>
     <form action="/search" method="get">
@@ -10,25 +12,86 @@
         <button type="submit">提交</button>
     </form>
     {% if chengyu %}
-    <h4>搜索结果（共找到{{ chengyu.count }}个结果）</h4>
-    <table border="1" cellpadding="10" >
-    <tr>
-        <td>编号</td>
-        <td>名称</td>
-        <td>拼音</td>
-        <td>添加时间</td>
-    </tr>
-    {% for cy in chengyu.data %}
+        <h4>搜索结果（共找到{{ chengyu.count }}个成语，返回{{ chengyu.respNum }}个结果）</h4>
+        <table border="1" cellpadding="10" >
         <tr>
-            <td>{{ cy.id }}</td>
-            <td>{{ cy.name }}</td>
-            <td>{{ cy.py }}</td>
-            <td>{{ cy.add_time }}</td>
+            <td>编号</td>
+            <td>名称</td>
+            <td>拼音</td>
+            <td>链接</td>
+            <td>添加时间</td>
         </tr>
-    {% endfor %}
-    </table>
+        {% for cy in chengyu.data %}
+            <tr>
+                <td>{{ cy.id }}</td>
+                <td>{{ cy.name }} <button type="button" class="btn" id="buttonCopy" data-clipboard-text="{{ cy.name }}">点击复制</button></td>
+                <td>{{ cy.py }}</td>
+                <td><a href="{{ cy.jumplink }}">链接</a></td>
+                <td>{{ cy.add_time }} </td>
+            </tr>
+        {% endfor %}
+        </table>
+
+        <div id="prePage">
+            <button id="getPrePageBtn" onclick="getPrePage" type="button">上一页</button>
+        </div>
+        <div id="nextPage">
+            <button>下一页</button>
+        </div>
+        <div id="dataid" d="{{chengyu}}" style="display:none"></div>
+        <div id="div1"><h3>2333333333</h3></div>
     {% endif %}
 </body>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#getPrePageBtn").click(function(){
+            $.ajax({url:"/json/test/1",success:function(result){
+                console.log(result);
+                $("#div1").html(result);
+            }});
+        });
+    });
+
+    var clipboard = new ClipboardJS('.btn');
+    clipboard.on('success', function (e) {
+        console.log(e);
+        alert("*"+e.text+"* 复制成功")
+    });
+    clipboard.on('error', function (e) {
+        console.log(e);
+        alert('复制失败')
+    });
+    let pn = 1; // 当前的页面
+    let pe = 1; // 结束的页面
+
+    function getPrePage() {
+        var xmlhttp;
+        if (window.XMLHttpRequest)
+        {
+            //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+            xmlhttp=new XMLHttpRequest();
+            xmlhttp.open('get', '/json/test/1', true);
+            let temp = xmlhttp.send();
+            console.log(temp)
+        }
+        else
+        {
+            // IE6, IE5 浏览器执行代码
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+    }
+    function ready(){
+        var chengyu = document.getElementById('dataid').getAttribute('d');
+        chengyu = chengyu.replace(/'/g, "\"");
+        console.log('chengyu', chengyu);
+        console.log(typeof chengyu);
+        chengyu = JSON.parse(chengyu);
+        console.log('---pe--->', chengyu);
+    }
+    document.addEventListener("DOMContentLoaded", ready);
+</script>
 
 <style>
     tr{
